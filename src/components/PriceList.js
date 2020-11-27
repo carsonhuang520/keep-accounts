@@ -5,7 +5,7 @@ import Ionicon from 'react-ionicons'
 function PriceList(props) {
   const { items, onModifyItem, onDeleteItem } = props
   return (
-    <ul className="list-group list-group-flush">
+    <ul className="list-group list-group-flush mt-4">
       {items.map((item) => {
         return (
           <li
@@ -34,7 +34,7 @@ function PriceList(props) {
               href="/"
               onClick={(event) => {
                 event.preventDefault()
-                onDeleteItem(item)
+                onModifyItem(item)
               }}
             >
               <Ionicon
@@ -51,7 +51,7 @@ function PriceList(props) {
               href="/"
               onClick={(event) => {
                 event.preventDefault()
-                onModifyItem(item)
+                onDeleteItem(item)
               }}
             >
               <Ionicon
