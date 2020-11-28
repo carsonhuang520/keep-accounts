@@ -6,59 +6,12 @@ import TotalPrice from '../components/TotalPrice'
 import MonthPicker from '../components/MonthPicker'
 import CreateBtn from '../components/CreateBtn'
 import { LIST_VIEW, INCOME, getYearAndMonth, padLeft } from '../utility'
-
-export const items = [
-  {
-    id: '1',
-    title: '吃饭',
-    price: 200,
-    date: '2020-08-10',
-    cid: '1',
-  },
-  {
-    id: '2',
-    title: '吃饭',
-    price: 200,
-    date: '2020-09-10',
-    cid: '1',
-  },
-  {
-    id: '3',
-    title: '工资',
-    price: 1200,
-    date: '2020-11-10',
-    cid: '2',
-  },
-]
-
-export const categories = {
-  1: {
-    id: '1',
-    name: '消费',
-    type: 'outcome',
-    iconName: 'ios-construct-outline',
-  },
-  2: {
-    id: '1',
-    name: '收入',
-    type: 'income',
-    iconName: 'ios-construct-outline',
-  },
-}
-
-const newItem = {
-  id: '4',
-  title: '理发',
-  price: 30,
-  date: '2020-11-10',
-  cid: '1',
-}
+import withContext from '../WithContext'
 
 class Home extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      items,
       activeTab: LIST_VIEW,
       currentDate: getYearAndMonth(),
     }
@@ -74,32 +27,21 @@ class Home extends Component {
     })
   }
   addItem = () => {
-    this.setState({
-      items: [newItem, ...this.state.items],
-    })
+    this.props.history.push('/create')
   }
   deleteItem = (item) => {
-    const newItems = this.state.items.filter((e) => e.id !== item.id)
-    this.setState({
-      items: newItems,
-    })
+    this.props.actions.deleteItem(item)
   }
   modifyItem = (item) => {
-    const newItems = this.state.items.map((e) => {
-      if (e.id === item.id) {
-        return { ...e, title: '更新后的item' }
-      } else {
-        return e
-      }
-    })
-    this.setState({
-      items: newItems,
-    })
+    this.props.history.push(`/update/${item.id}`)
   }
   render() {
-    const { currentDate, activeTab, items } = this.state
-    const itemsWithCategory = items
-      .map((item) => {
+    const { data } = this.props
+    const { items, categories } = data
+    const { currentDate, activeTab } = this.state
+    const itemsWithCategory = Object.keys(items)
+      .map((id) => {
+        let item = items[id]
         item.category = categories[item.cid]
         return item
       })
@@ -135,19 +77,26 @@ class Home extends Component {
             onTabChange={(view) => this.changeTab(view)}
           />
           <CreateBtn className="mb-5" onClick={this.addItem} />
-          <PriceList
-            items={itemsWithCategory}
-            onModifyItem={(item) => {
-              this.modifyItem(item)
-            }}
-            onDeleteItem={(item) => {
-              this.deleteItem(item)
-            }}
-          />
+          {activeTab === LIST_VIEW && itemsWithCategory.length > 0 && (
+            <PriceList
+              items={itemsWithCategory}
+              onModifyItem={(item) => {
+                this.modifyItem(item)
+              }}
+              onDeleteItem={(item) => {
+                this.deleteItem(item)
+              }}
+            />
+          )}
+          {activeTab === LIST_VIEW && itemsWithCategory.length === 0 && (
+            <div className="alert alert-light text-center no-record">
+              您还没有任何记账记录
+            </div>
+          )}
         </div>
       </div>
     )
   }
 }
 
-export default Home
+export default withContext(Home)
