@@ -1,0 +1,26 @@
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+.App {
+  padding: 4px 12px;
+  width: 960px;
+  margin: 0 auto;
+}
+.price-list {
+  border: 1px solid #dddddd;
+  border-radius: 4px;
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background-color: #eeeeee;
+  box-sizing: border-box;
+}
+.content {
+  padding: 10px;
+  background-color: #eeeeee;
+}

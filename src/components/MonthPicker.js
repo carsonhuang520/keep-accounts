@@ -53,9 +53,10 @@ class MonthPicker extends Component {
         className="dropdown month-picker-component"
         ref={(node) => (this.node = node)}
       >
-        <p>选择月份</p>
+        {/* <p style={{ margin: 0 }}>选择月份</p> */}
+        <span>选择月份</span>
         <button
-          className="btn btn-lg btn-secondary dropdown-toggle"
+          className="btn btn-lg btn-primary dropdown-toggle"
           onClick={this.toggleDropdown}
         >
           {`${year}年 ${padLeft(month)}月`}

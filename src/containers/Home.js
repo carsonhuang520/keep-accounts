@@ -7,7 +7,7 @@ import MonthPicker from '../components/MonthPicker'
 import CreateBtn from '../components/CreateBtn'
 import { LIST_VIEW, INCOME, getYearAndMonth, padLeft } from '../utility'
 
-const items = [
+export const items = [
   {
     id: '1',
     title: '吃饭',
@@ -31,7 +31,7 @@ const items = [
   },
 ]
 
-const categories = {
+export const categories = {
   1: {
     id: '1',
     name: '消费',
@@ -117,7 +117,7 @@ class Home extends Component {
     })
     return (
       <div>
-        <div className="row">
+        <div className="row header">
           <div className="col">
             <MonthPicker
               year={currentDate.year}
@@ -129,20 +129,22 @@ class Home extends Component {
             <TotalPrice income={income} outcome={outcome} />
           </div>
         </div>
-        <ViewTab
-          activeTab={activeTab}
-          onTabChange={(view) => this.changeTab(view)}
-        />
-        <CreateBtn className="mb-5" onClick={this.addItem} />
-        <PriceList
-          items={itemsWithCategory}
-          onModifyItem={(item) => {
-            this.modifyItem(item)
-          }}
-          onDeleteItem={(item) => {
-            this.deleteItem(item)
-          }}
-        />
+        <div className="content">
+          <ViewTab
+            activeTab={activeTab}
+            onTabChange={(view) => this.changeTab(view)}
+          />
+          <CreateBtn className="mb-5" onClick={this.addItem} />
+          <PriceList
+            items={itemsWithCategory}
+            onModifyItem={(item) => {
+              this.modifyItem(item)
+            }}
+            onDeleteItem={(item) => {
+              this.deleteItem(item)
+            }}
+          />
+        </div>
       </div>
     )
   }

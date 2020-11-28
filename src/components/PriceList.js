@@ -5,7 +5,7 @@ import Ionicon from 'react-ionicons'
 function PriceList(props) {
   const { items, onModifyItem, onDeleteItem } = props
   return (
-    <ul className="list-group list-group-flush mt-4">
+    <ul className="list-group list-group-flush mt-4 price-list">
       {items.map((item) => {
         return (
           <li
