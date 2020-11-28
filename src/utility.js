@@ -15,10 +15,28 @@ export const range = (size, startAt = 1) => {
   return arr
 }
 
+export const isValidDate = (dateString) => {
+  const regEx = /^\d{4}-\d{2}-\d{2}$/
+  if (!dateString.match(regEx)) return false // Invalid format
+  const d = new Date(dateString)
+  if (Number.isNaN(d.getTime())) return false // Invalid date
+  return d.toISOString().slice(0, 10) === dateString
+}
+
 export const getYearAndMonth = (str) => {
   const date = str ? new Date(str) : new Date()
   return {
     year: date.getFullYear(),
     month: date.getMonth() + 1,
   }
+}
+
+export const Colors = {
+  blue: '#347eff',
+  deepBlue: '#61dafb',
+  green: '#28a745',
+  red: '#dc3545',
+  gray: '#555',
+  lightGray: '#efefef',
+  white: '#fff',
 }
