@@ -43,6 +43,39 @@ class App extends Component {
           })
         })
       }),
+      getEditData: withLoading(async (id) => {
+        const { items, categories } = this.state
+        let promiseArray = []
+        if (Object.keys(categories).length === 0) {
+          promiseArray.push(axios.get('/categories'))
+        }
+        const itemAlreadyFetched = !!(Object.keys(items).indexOf(id) > -1)
+        if (id && !itemAlreadyFetched) {
+          const getURLWithID = `/items/${id}`
+          promiseArray.push(axios.get(getURLWithID))
+        }
+        const [newCategories, editItem] = await Promise.all(promiseArray)
+        const finalCategories = newCategories
+          ? flatternArray(newCategories.data)
+          : categories
+        const finalItem = editItem ? editItem.data : items[id]
+        if (id) {
+          this.setState({
+            categories: finalCategories,
+            isLoading: false,
+            items: { ...this.state.items, [id]: finalItem },
+          })
+        } else {
+          this.setState({
+            categories: finalCategories,
+            isLoading: false,
+          })
+        }
+        return {
+          categories: finalCategories,
+          editItem: finalItem,
+        }
+      }),
       selectNewMonth: withLoading((year, month) => {
         const getURLWithData = `/items?monthCategory=${year}-${month}&_sort=timestamp&_order=desc`
         axios.get(getURLWithData).then((res) => {
@@ -62,7 +95,7 @@ class App extends Component {
           })
         })
       }),
-      createItem: (item, id) => {
+      createItem: withLoading((item, id) => {
         const newId = ID()
         const parsedDate = getYearAndMonth(item.date)
         item.monthCategory = `${parsedDate.year}-${parsedDate.month}`
@@ -71,10 +104,11 @@ class App extends Component {
         axios.post(`/items`, newItem).then(() => {
           this.setState({
             items: { [newId]: newItem, ...this.state.items },
+            isLoading: false,
           })
         })
-      },
-      updateItem: (item, id) => {
+      }),
+      updateItem: withLoading((item, id) => {
         const newItem = {
           ...item,
           cid: id,
@@ -83,9 +117,10 @@ class App extends Component {
         axios.put(`/items/${item.id}`, newItem).then(() => {
           this.setState({
             items: { ...this.state.items, [item.id]: newItem },
+            isLoading: false,
           })
         })
-      },
+      }),
     }
   }
   render() {

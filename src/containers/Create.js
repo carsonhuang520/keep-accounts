@@ -9,14 +9,21 @@ const tabsText = [OUTCOME, INCOME]
 class Create extends Component {
   constructor(props) {
     super(props)
-    const { data } = this.props
-    const { id } = this.props.match.params
-    const { categories, items } = data
     this.state = {
-      selectedTab: id && items[id] ? categories[items[id].cid].type : OUTCOME,
-      selectedCategory: id && items[id] ? categories[items[id].cid] : null,
+      selectedTab: OUTCOME,
+      selectedCategory: null,
       validationPassed: true,
     }
+  }
+  componentDidMount() {
+    const { id } = this.props.match.params
+    this.props.actions.getEditData(id).then((data) => {
+      const { editItem, categories } = data
+      this.setState({
+        selectedTab: id && editItem ? categories[editItem.cid].type : OUTCOME,
+        selectedCategory: id && editItem ? categories[editItem.cid] : null,
+      })
+    })
   }
   tabChange = (index) => {
     this.setState({
