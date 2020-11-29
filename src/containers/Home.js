@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, Fragment } from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import PriceList from '../components/PriceList'
 import ViewTab from '../components/ViewTab'
@@ -7,6 +7,7 @@ import MonthPicker from '../components/MonthPicker'
 import CreateBtn from '../components/CreateBtn'
 import { LIST_VIEW, INCOME } from '../utility'
 import withContext from '../WithContext'
+import Loader from '../components/Loader'
 
 class Home extends Component {
   constructor(props) {
@@ -37,7 +38,7 @@ class Home extends Component {
   }
   render() {
     const { data } = this.props
-    const { items, categories, currentDate } = data
+    const { items, categories, currentDate, isLoading } = data
     const { activeTab } = this.state
     const itemsWithCategory = Object.keys(items).map((id) => {
       let item = items[id]
@@ -73,21 +74,27 @@ class Home extends Component {
             onTabChange={(view) => this.changeTab(view)}
           />
           <CreateBtn className="mb-5" onClick={this.addItem} />
-          {activeTab === LIST_VIEW && itemsWithCategory.length > 0 && (
-            <PriceList
-              items={itemsWithCategory}
-              onModifyItem={(item) => {
-                this.modifyItem(item)
-              }}
-              onDeleteItem={(item) => {
-                this.deleteItem(item)
-              }}
-            />
-          )}
-          {activeTab === LIST_VIEW && itemsWithCategory.length === 0 && (
-            <div className="alert alert-light text-center no-record">
-              您还没有任何记账记录
-            </div>
+          {isLoading ? (
+            <Loader />
+          ) : (
+            <Fragment>
+              {activeTab === LIST_VIEW && itemsWithCategory.length > 0 && (
+                <PriceList
+                  items={itemsWithCategory}
+                  onModifyItem={(item) => {
+                    this.modifyItem(item)
+                  }}
+                  onDeleteItem={(item) => {
+                    this.deleteItem(item)
+                  }}
+                />
+              )}
+              {activeTab === LIST_VIEW && itemsWithCategory.length === 0 && (
+                <div className="alert alert-light text-center no-record">
+                  您还没有任何记账记录
+                </div>
+              )}
+            </Fragment>
           )}
         </div>
       </div>

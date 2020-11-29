@@ -16,9 +16,18 @@ class App extends Component {
       currentDate: getYearAndMonth(),
       items: {},
       categories: {},
+      isLoading: false,
+    }
+    const withLoading = (cb) => {
+      return (...args) => {
+        this.setState({
+          isLoading: true,
+        })
+        return cb(...args)
+      }
     }
     this.actions = {
-      initData: () => {
+      initData: withLoading(() => {
         const { currentDate } = this.state
         const getURLWithData = `/items?monthCategory=${currentDate.year}-${currentDate.month}&_sort=timestamp&_order=desc`
         const promiseArray = [
@@ -29,27 +38,30 @@ class App extends Component {
           const [categories, items] = res
           this.setState({
             items: flatternArray(items.data),
+            isLoading: false,
             categories: flatternArray(categories.data),
           })
         })
-      },
-      selectNewMonth: (year, month) => {
+      }),
+      selectNewMonth: withLoading((year, month) => {
         const getURLWithData = `/items?monthCategory=${year}-${month}&_sort=timestamp&_order=desc`
         axios.get(getURLWithData).then((res) => {
           this.setState({
             items: flatternArray(res.data),
             currentDate: { year, month },
+            isLoading: false,
           })
         })
-      },
-      deleteItem: (item) => {
+      }),
+      deleteItem: withLoading((item) => {
         axios.delete(`/items/${item.id}`).then(() => {
           delete this.state.items[item.id]
           this.setState({
             items: this.state.items,
+            isLoading: false,
           })
         })
-      },
+      }),
       createItem: (item, id) => {
         const newId = ID()
         const parsedDate = getYearAndMonth(item.date)
