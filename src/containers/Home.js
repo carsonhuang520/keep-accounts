@@ -5,9 +5,37 @@ import ViewTab from '../components/ViewTab'
 import TotalPrice from '../components/TotalPrice'
 import MonthPicker from '../components/MonthPicker'
 import CreateBtn from '../components/CreateBtn'
-import { LIST_VIEW, INCOME } from '../utility'
+import { LIST_VIEW, CHART_VIEW, INCOME, OUTCOME } from '../utility'
 import withContext from '../WithContext'
 import Loader from '../components/Loader'
+import PieChart from '../components/PieChart'
+
+const generateChartDataByCategory = (items, type) => {
+  let chartData = {}
+  items
+    .filter((item) => item.category.type === type)
+    .forEach((item) => {
+      if (chartData[item.cid]) {
+        chartData[item.cid].price += item.price * 1
+        chartData[item.cid].items.push([item.id])
+      } else {
+        chartData[item.cid] = {
+          name: item.category.name,
+          price: item.price * 1,
+          items: [item.id],
+        }
+      }
+    })
+  const legendData = Object.keys(chartData).map((item) => chartData[item].name)
+  const seriesData = Object.keys(chartData).map((item) => ({
+    name: chartData[item].name,
+    value: chartData[item].price,
+  }))
+  return {
+    legendData,
+    seriesData,
+  }
+}
 
 class Home extends Component {
   constructor(props) {
@@ -45,6 +73,8 @@ class Home extends Component {
       item.category = categories[item.cid]
       return item
     })
+    const outcomeData = generateChartDataByCategory(itemsWithCategory, OUTCOME)
+    const incomeData = generateChartDataByCategory(itemsWithCategory, INCOME)
     let outcome = 0
     let income = 0
     itemsWithCategory.forEach((item) => {
@@ -90,6 +120,47 @@ class Home extends Component {
                 />
               )}
               {activeTab === LIST_VIEW && itemsWithCategory.length === 0 && (
+                <div className="alert alert-light text-center no-record">
+                  您还没有任何记账记录
+                </div>
+              )}
+              {activeTab === CHART_VIEW && itemsWithCategory.length > 0 && (
+                <Fragment>
+                  {outcomeData.seriesData.length === 0 ? (
+                    <h3
+                      style={{ textAlign: 'center', fontSize: '24px' }}
+                      className="mx-3"
+                    >
+                      本月没有支出
+                    </h3>
+                  ) : (
+                    <PieChart
+                      el="outcome"
+                      title="本月支出"
+                      name="支出"
+                      legendData={outcomeData.legendData}
+                      seriesData={outcomeData.seriesData}
+                    />
+                  )}
+                  {incomeData.seriesData.length === 0 ? (
+                    <h3
+                      style={{ textAlign: 'center', fontSize: '24px' }}
+                      className="mx-3"
+                    >
+                      本月没有收入
+                    </h3>
+                  ) : (
+                    <PieChart
+                      el="income"
+                      title="本月收入"
+                      name="收入"
+                      legendData={incomeData.legendData}
+                      seriesData={incomeData.seriesData}
+                    />
+                  )}
+                </Fragment>
+              )}
+              {activeTab === CHART_VIEW && itemsWithCategory.length === 0 && (
                 <div className="alert alert-light text-center no-record">
                   您还没有任何记账记录
                 </div>
