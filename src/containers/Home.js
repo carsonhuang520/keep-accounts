@@ -5,7 +5,7 @@ import ViewTab from '../components/ViewTab'
 import TotalPrice from '../components/TotalPrice'
 import MonthPicker from '../components/MonthPicker'
 import CreateBtn from '../components/CreateBtn'
-import { LIST_VIEW, INCOME, getYearAndMonth, padLeft } from '../utility'
+import { LIST_VIEW, INCOME } from '../utility'
 import withContext from '../WithContext'
 
 class Home extends Component {
@@ -13,13 +13,13 @@ class Home extends Component {
     super(props)
     this.state = {
       activeTab: LIST_VIEW,
-      currentDate: getYearAndMonth(),
     }
   }
+  componentDidMount() {
+    this.props.actions.initData()
+  }
   changeDate = (year, month) => {
-    this.setState({
-      currentDate: { year, month },
-    })
+    this.props.actions.selectNewMonth(year, month)
   }
   changeTab = (view) => {
     this.setState({
@@ -37,17 +37,13 @@ class Home extends Component {
   }
   render() {
     const { data } = this.props
-    const { items, categories } = data
-    const { currentDate, activeTab } = this.state
-    const itemsWithCategory = Object.keys(items)
-      .map((id) => {
-        let item = items[id]
-        item.category = categories[item.cid]
-        return item
-      })
-      .filter((item) =>
-        item.date.includes(`${currentDate.year}-${padLeft(currentDate.month)}`)
-      )
+    const { items, categories, currentDate } = data
+    const { activeTab } = this.state
+    const itemsWithCategory = Object.keys(items).map((id) => {
+      let item = items[id]
+      item.category = categories[item.cid]
+      return item
+    })
     let outcome = 0
     let income = 0
     itemsWithCategory.forEach((item) => {
